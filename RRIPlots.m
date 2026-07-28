@@ -1,7 +1,3 @@
-%% Master Route Analysis Script (Individual Dashboards)
-% Add as many routes as you need by expanding these arrays.
-% Make sure the Pi file matches the Phone file for the same route!
-
 route_names = ["Central Park", "Convent", "Mosholu", "Reservoir", "West Side Highway", "Grand Concourse"];
 
 pi_files = [
@@ -22,15 +18,10 @@ phone_files = [
     "D:\ivanv\Documents\Summer2026IndependentStudy\RouteData\GrandConcourse\Location2.csv"
 ];
 
-% Number of routes
-num_routes = length(route_names);
 
-% Pre-allocate a structure to hold all processed data
+num_routes = length(route_names);
 routes(num_routes) = struct();
 
-% ---------------------------------------------------------
-% 1. Data Processing Loop (Runs your exact math for each route)
-% ---------------------------------------------------------
 for i = 1:num_routes
     fprintf('Processing %s...\n', route_names(i));
     
@@ -71,7 +62,7 @@ for i = 1:num_routes
     dlat = [0; diff(synced_lat)] * 111000; 
     dlon = [0; diff(synced_lon)] * 111000 * cos(lat_rad);
     step_dist = sqrt(dlat.^2 + dlon.^2);
-    cum_dist = cumsum(step_dist); 
+    c_dist = cumsum(step_dist); 
     
     %% Spectral Analysis (FFT)
     L = length(a_filtered);      
@@ -83,7 +74,7 @@ for i = 1:num_routes
     
     %% Store Data in Structure
     routes(i).name = route_names(i);
-    routes(i).distance = cum_dist;
+    routes(i).distance = c_dist;
     routes(i).raw_accel = a_raw_total;
     routes(i).filt_accel = a_filtered;
     routes(i).speed = synced_speed;
@@ -132,5 +123,3 @@ for i = 1:num_routes
     xlim([0 fs/2]); % Plot up to Nyquist frequency (200 Hz)
     grid on;
 end
-
-fprintf('Processing complete. Generated %d individual dashboards.\n', num_routes);
