@@ -86,4 +86,3 @@ xlim([0 max(runs(1).dist)]);
 legend('Location', 'northeast');
 grid on; hold off;
 
-fprintf('Repeatability validation plot generated.\n');
