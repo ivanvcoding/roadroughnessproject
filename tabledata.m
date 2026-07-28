@@ -19,7 +19,6 @@ phone_files = [
 ];
 
 num_routes = length(route_names);
-fprintf('\n--- COPY AND PASTE THIS INTO YOUR LATEX TABLE ---\n\n');
 
 for i = 1:num_routes
     % 1. Load Pi Data
