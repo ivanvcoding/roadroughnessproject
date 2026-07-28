@@ -35,16 +35,16 @@ for i = 1:num_routes
         elapsed_time_pi = raw_time_pi - raw_time_pi(1); 
     end
     
-    % Calculate RAW Vector Magnitude
+   
     a_raw_total = sqrt(pi_data.X.^2 + pi_data.Y.^2 + pi_data.Z.^2);
     
-    %% High-Pass Filter (Removes 1G Gravity & < 2Hz Pedaling Sway)
+   
     fs = 400; % Sample rate (400 Hz)
     fc = 2;   % Cutoff frequency
     [b, a] = butter(2, fc/(fs/2), 'high');
     a_filtered = filtfilt(b, a, a_raw_total);
     
-    %% Load iPhone GPS Data
+    
     phone_data = readtable(phone_files(i));
     raw_time_phone = phone_data.seconds_elapsed;
     elapsed_time_phone = raw_time_phone - raw_time_phone(1);
@@ -53,7 +53,7 @@ for i = 1:num_routes
     raw_speed(raw_speed < 0) = NaN;
     clean_speed = fillmissing(raw_speed, 'linear');
     
-    %% Sync, Interpolate, and Distance Math
+    
     synced_speed = interp1(elapsed_time_phone, clean_speed, elapsed_time_pi, 'linear', 'extrap');
     synced_lat = interp1(elapsed_time_phone, phone_data.latitude, elapsed_time_pi, 'linear', 'extrap');
     synced_lon = interp1(elapsed_time_phone, phone_data.longitude, elapsed_time_pi, 'linear', 'extrap');
@@ -64,7 +64,7 @@ for i = 1:num_routes
     step_dist = sqrt(dlat.^2 + dlon.^2);
     c_dist = cumsum(step_dist); 
     
-    %% Spectral Analysis (FFT)
+    
     L = length(a_filtered);      
     Y = fft(a_filtered);          
     P2 = abs(Y / L);
@@ -72,7 +72,7 @@ for i = 1:num_routes
     P1(2:end-1) = 2 * P1(2:end-1);
     f_axis = fs * (0:floor(L/2)) / L;
     
-    %% Store Data in Structure
+    
     routes(i).name = route_names(i);
     routes(i).distance = c_dist;
     routes(i).raw_accel = a_raw_total;
@@ -82,15 +82,12 @@ for i = 1:num_routes
     routes(i).fft_amp = P1;
 end
 
-% ---------------------------------------------------------
-% 2. Plotting Dashboard (Individual Figures per Route)
-% ---------------------------------------------------------
 for i = 1:num_routes
     % Create a new figure for each route with a cascading position
     figure('Name', sprintf('Dashboard - %s', routes(i).name), ...
            'Color', 'w', 'Position', [100+(i*30) 50+(i*30) 1200 800]);
     
-    % Panel 1: Raw Acceleration vs. Distance 
+    %Raw Acceleration vs. Distance 
     subplot(2,2,1);
     plot(routes(i).distance, routes(i).raw_accel, 'Color', [0 0.4470 0.7410], 'LineWidth', 0.5);
     title(sprintf('%s: Raw Acceleration Magnitude (Includes Gravity)', routes(i).name));
@@ -98,7 +95,7 @@ for i = 1:num_routes
     ylabel('Acceleration (g)');
     grid on;
     
-    % Panel 2: Filtered Acceleration vs. Distance 
+    % Filtered Acceleration vs. Distance 
     subplot(2,2,2);
     plot(routes(i).distance, routes(i).filt_accel, 'Color', [0.8500 0.3250 0.0980], 'LineWidth', 0.5);
     title('Filtered Mechanical Vibration (> 2 Hz)');
@@ -106,7 +103,7 @@ for i = 1:num_routes
     ylabel('Acceleration (g)');
     grid on;
     
-    % Panel 3: Velocity vs. Distance
+    % Velocity vs. Distance
     subplot(2,2,3);
     plot(routes(i).distance, routes(i).speed, 'Color', [0.4660 0.6740 0.1880], 'LineWidth', 1.5);
     title('Velocity Profile');
@@ -114,7 +111,7 @@ for i = 1:num_routes
     ylabel('Speed (m/s)');
     grid on;
     
-    % Panel 4: FFT (Frequency Domain)
+    % FFT (Frequency Domain)
     subplot(2,2,4);
     plot(routes(i).f_axis, routes(i).fft_amp, 'Color', [0.4940 0.1840 0.5560], 'LineWidth', 1.2);
     title('Spectral Comparison (FFT)');
