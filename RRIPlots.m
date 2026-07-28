@@ -83,7 +83,6 @@ for i = 1:num_routes
 end
 
 for i = 1:num_routes
-    % Create a new figure for each route with a cascading position
     figure('Name', sprintf('Dashboard - %s', routes(i).name), ...
            'Color', 'w', 'Position', [100+(i*30) 50+(i*30) 1200 800]);
     
