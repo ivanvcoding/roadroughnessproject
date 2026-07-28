@@ -25,7 +25,7 @@ routes(num_routes) = struct();
 for i = 1:num_routes
     fprintf('Processing %s...\n', route_names(i));
     
-    %% Load Raspberry Pi Data
+   
     pi_data = readtable(pi_files(i));
     raw_time_pi = pi_data.Time; 
     
